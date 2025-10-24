@@ -35,26 +35,30 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
+      # Release times: 16:00 German time
+      # B01/B02: 14:00 UTC (Sommerzeit CEST)
+      # B03-B06: 15:00 UTC (Winterzeit CET ab 27.10.2025)
+
       - name: Run tests for exercise B01
         run: npm run test:b01
-        if: ${{ !cancelled() && github.event.head_commit.timestamp >= '2024-10-21T12:00:00Z' }}
+        if: ${{ !cancelled() && github.event.head_commit.timestamp >= '2025-10-20T14:00:00Z' }}
 
       - name: Run tests for exercise B02
         run: npm run test:b02
-        if: ${{ !cancelled() && github.event.head_commit.timestamp >= '2024-10-28T12:00:00Z' }}
+        if: ${{ !cancelled() && github.event.head_commit.timestamp >= '2025-10-27T14:00:00Z' }}
 
       - name: Run tests for exercise B03
         run: npm run test:b03
-        if: ${{ !cancelled() && github.event.head_commit.timestamp >= '2024-11-11T12:00:00Z' }}
+        if: ${{ !cancelled() && github.event.head_commit.timestamp >= '2025-11-17T15:00:00Z' }}
 
       - name: Run tests for exercise B04
         run: npm run test:b04
-        if: ${{ !cancelled() && github.event.head_commit.timestamp >= '2024-11-18T12:00:00Z' }}
+        if: ${{ !cancelled() && github.event.head_commit.timestamp >= '2025-11-24T15:00:00Z' }}
 
       - name: Run tests for exercise B05
         run: npm run test:b05
-        if: ${{ !cancelled() && github.event.head_commit.timestamp >= '2024-11-25T12:00:00Z' }}
+        if: ${{ !cancelled() && github.event.head_commit.timestamp >= '2025-12-01T15:00:00Z' }}
 
       - name: Run tests for exercise B06
         run: npm run test:b06
-        if: ${{ !cancelled() && github.event.head_commit.timestamp >= '2024-12-02T12:00:00Z' }}
+        if: ${{ !cancelled() && github.event.head_commit.timestamp >= '2025-12-08T15:00:00Z' }}
