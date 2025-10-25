@@ -66,7 +66,25 @@ export class Name {
      */
     // @methodtype conversion-method
     public asDataString(): string {
-        return this.components.join(DEFAULT_DELIMITER);
+        // unmask, then remask for DEFAULT_DELIMITER
+        const unmasked = this.components.map(c => this.unmask(c));
+        const remasked = unmasked.map(c => this.mask(c, DEFAULT_DELIMITER));
+        return remasked.join(DEFAULT_DELIMITER);
+    }
+
+    /** adds escape characters for special characters */
+    // @methodtype helper-method
+    private mask(component: string, delimiter: string): string {
+        let result = '';
+        for (let i = 0; i < component.length; i++) {
+            const char = component[i];
+            // escape the delimiter and the escape character
+            if (char === delimiter || char === ESCAPE_CHARACTER) {
+                result += ESCAPE_CHARACTER;
+            }
+            result += char;
+        }
+        return result;
     }
 
     /** Returns properly masked component string */
