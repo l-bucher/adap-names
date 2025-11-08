@@ -6,52 +6,107 @@ export class StringArrayName implements Name {
     protected delimiter: string = DEFAULT_DELIMITER;
     protected components: string[] = [];
 
+    // @methodtype initialization-method
     constructor(source: string[], delimiter?: string) {
-        throw new Error("needs implementation or deletion");
+        this.components = [...source];
+        if (delimiter !== undefined) {
+            this.delimiter = delimiter;
+        }
     }
 
+    // @methodtype conversion-method
     public asString(delimiter: string = this.delimiter): string {
-        throw new Error("needs implementation or deletion");
+        // unmask components
+        const unmasked = this.components.map(comp => this.unmask(comp));
+        return unmasked.join(delimiter);
     }
 
+    // @methodtype conversion-method
     public asDataString(): string {
-        throw new Error("needs implementation or deletion");
+        // unmask, then remask for DEFAULT_DELIMITER
+        const unmasked = this.components.map(c => this.unmask(c));
+        const remasked = unmasked.map(c => this.mask(c, DEFAULT_DELIMITER));
+        return remasked.join(DEFAULT_DELIMITER);
     }
 
+    // @methodtype get-method
     public getDelimiterCharacter(): string {
-        throw new Error("needs implementation or deletion");
+        return this.delimiter;
     }
 
+    // @methodtype query-method
     public isEmpty(): boolean {
-        throw new Error("needs implementation or deletion");
+        return this.components.length === 0;
     }
 
+    // @methodtype get-method
     public getNoComponents(): number {
-        throw new Error("needs implementation or deletion");
+        return this.components.length;
     }
 
+    // @methodtype get-method
     public getComponent(i: number): string {
-        throw new Error("needs implementation or deletion");
+        return this.components[i];
     }
 
+    // @methodtype set-method
     public setComponent(i: number, c: string): void {
-        throw new Error("needs implementation or deletion");
+        this.components[i] = c;
     }
 
+    // @methodtype command-method
     public insert(i: number, c: string): void {
-        throw new Error("needs implementation or deletion");
+        this.components.splice(i, 0, c);
     }
 
+    // @methodtype command-method
     public append(c: string): void {
-        throw new Error("needs implementation or deletion");
+        this.components.push(c);
     }
 
+    // @methodtype command-method
     public remove(i: number): void {
-        throw new Error("needs implementation or deletion");
+        this.components.splice(i, 1);
     }
 
+    // @methodtype command-method
     public concat(other: Name): void {
-        throw new Error("needs implementation or deletion");
+        for (let i = 0; i < other.getNoComponents(); i++) {
+            this.append(other.getComponent(i));
+        }
+    }
+
+    // @methodtype helper-method
+    private unmask(component: string): string {
+        let result = '';
+        let i = 0;
+
+        while (i < component.length) {
+            if (component[i] === ESCAPE_CHARACTER && i + 1 < component.length) {
+                // Found escape char + next char exists: take next char, skip both
+                result += component[i + 1];
+                i += 2;
+            } else {
+                // Normal char or escape at end: take current char, move forward
+                result += component[i];
+                i++;
+            }
+        }
+        return result;
+    }
+
+    // @methodtype helper-method
+    private mask(component: string, delimiter: string): string {
+        let result = '';
+        for (let i = 0; i < component.length; i++) {
+            const char = component[i];
+            // escape the delimiter and the escape character
+            if (char === delimiter || char === ESCAPE_CHARACTER) {
+                result += ESCAPE_CHARACTER;
+            }
+            result += char;
+        }
+        return result;
     }
 
 }
