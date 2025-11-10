@@ -111,9 +111,6 @@ export class StringName implements Name {
 
     // @methodtype helper-method
     private splitIntoComponents(): string[] {
-        if (this.name === "") {
-            return [];
-        }
         // Use regex to split only at delimiters that are not escaped (not preceded by \)
         const unescaped = new RegExp(`(?<!\\\\)\\${this.delimiter}`, "g");
         return this.name.split(unescaped);
