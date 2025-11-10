@@ -59,23 +59,26 @@ export class StringName implements Name {
 
     // @methodtype get-method
     public getComponent(x: number): string {
+        this.assertIsValidIndex(x);
         const components = this.splitIntoComponents();
         return components[x];
     }
 
     // @methodtype set-method
     public setComponent(n: number, c: string): void {
+        this.assertIsValidIndex(n);
+        this.assertIsNotNullOrUndefined(c);
         const components = this.splitIntoComponents();
-        const wasExtended = n >= components.length;
         components[n] = c;
         this.name = components.join(this.delimiter);
-        if (wasExtended) {
-            this.noComponents = components.length;
-        }
     }
 
     // @methodtype command-method
     public insert(n: number, c: string): void {
+        if (n < 0 || n > this.getNoComponents()) {
+            throw new RangeError(`Insert index ${n} out of bounds [0, ${this.getNoComponents()}]`);
+        }
+        this.assertIsNotNullOrUndefined(c);
         const components = this.splitIntoComponents();
         components.splice(n, 0, c);
         this.name = components.join(this.delimiter);
@@ -84,6 +87,7 @@ export class StringName implements Name {
 
     // @methodtype command-method
     public append(c: string): void {
+        this.assertIsNotNullOrUndefined(c);
         if (this.isEmpty()) {
             this.name = c;
         } else {
@@ -94,6 +98,7 @@ export class StringName implements Name {
 
     // @methodtype command-method
     public remove(n: number): void {
+        this.assertIsValidIndex(n);
         const components = this.splitIntoComponents();
         const removed = components.splice(n, 1);
         if (removed.length > 0) {
@@ -154,4 +159,17 @@ export class StringName implements Name {
         return result;
     }
 
+    // @methodtype assertion-method
+    private assertIsValidIndex(index: number): void {
+        if (index < 0 || index >= this.getNoComponents()) {
+            throw new RangeError(`Index ${index} out of bounds [0, ${this.getNoComponents()})`);
+        }
+    }
+
+    // @methodtype assertion-method
+    private assertIsNotNullOrUndefined(component: string): void {
+        if (component === null || component === undefined) {
+            throw new TypeError("Component cannot be null or undefined");
+        }
+    }
 }
