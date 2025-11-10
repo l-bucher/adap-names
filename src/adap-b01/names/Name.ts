@@ -90,12 +90,15 @@ export class Name {
     /** Returns properly masked component string */
     // @methodtype get-method
     public getComponent(i: number): string {
+        this.assertIsValidIndex(i);
         return this.components[i];
     }
 
     /** Expects that new Name component c is properly masked */
     // @methodtype set-method
     public setComponent(i: number, c: string): void {
+        this.assertIsValidIndex(i);
+        this.assertIsNotNullOrUndefined(c);
         this.components[i] = c;
     }
 
@@ -108,18 +111,38 @@ export class Name {
     /** Expects that new Name component c is properly masked */
     // @methodtype command-method
     public insert(i: number, c: string): void {
+        if (i < 0 || i > this.getNoComponents()) {
+            throw new RangeError(`Insert index ${i} out of bounds [0, ${this.getNoComponents()}]`);
+        }
+        this.assertIsNotNullOrUndefined(c);
         this.components.splice(i, 0, c);
     }
 
     /** Expects that new Name component c is properly masked */
     // @methodtype command-method
     public append(c: string): void {
+        this.assertIsNotNullOrUndefined(c);
         this.components.push(c);
     }
 
     // @methodtype command-method
     public remove(i: number): void {
+        this.assertIsValidIndex(i);
         this.components.splice(i, 1);
+    }
+
+    // @methodtype assertion-method
+    private assertIsValidIndex(index: number): void {
+        if (index < 0 || index >= this.getNoComponents()) {
+            throw new RangeError(`Index ${index} out of bounds [0, ${this.getNoComponents()})`);
+        }
+    }
+
+    // @methodtype assertion-method
+    private assertIsNotNullOrUndefined(component: string): void {
+        if (component === null || component === undefined) {
+            throw new TypeError("Component cannot be null or undefined");
+        }
     }
 
 }
