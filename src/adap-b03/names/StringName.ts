@@ -7,65 +7,83 @@ export class StringName extends AbstractName {
     protected name: string = "";
     protected noComponents: number = 0;
 
+    // @methodtype initialization-method
     constructor(source: string, delimiter?: string) {
-        super();
-        throw new Error("needs implementation or deletion");
+        super(delimiter);
+        this.name = source;
+        this.noComponents = this.calculateNoComponents();
     }
 
+    // @methodtype cloning-method
     public clone(): Name {
-        throw new Error("needs implementation or deletion");
+        return new StringName(this.name, this.delimiter);
     }
 
-    public asString(delimiter: string = this.delimiter): string {
-        throw new Error("needs implementation or deletion");
-    }
-
-    public asDataString(): string {
-        throw new Error("needs implementation or deletion");
-    }
-
-    public isEqual(other: Name): boolean {
-        throw new Error("needs implementation or deletion");
-    }
-
-    public getHashCode(): number {
-        throw new Error("needs implementation or deletion");
-    }
-
-    public isEmpty(): boolean {
-        throw new Error("needs implementation or deletion");
-    }
-
-    public getDelimiterCharacter(): string {
-        throw new Error("needs implementation or deletion");
-    }
-
+    // @methodtype get-method
     public getNoComponents(): number {
-        throw new Error("needs implementation or deletion");
+        return this.noComponents;
     }
 
+    // @methodtype get-method
     public getComponent(i: number): string {
-        throw new Error("needs implementation or deletion");
+        this.assertIsValidIndex(i);
+        const components = this.splitIntoComponents();
+        return components[i];
     }
 
-    public setComponent(i: number, c: string) {
-        throw new Error("needs implementation or deletion");
+    // @methodtype set-method
+    public setComponent(i: number, c: string): void {
+        this.assertIsValidIndex(i);
+        this.assertIsNotNullOrUndefined(c);
+        const components = this.splitIntoComponents();
+        components[i] = c;
+        this.name = components.join(this.delimiter);
     }
 
-    public insert(i: number, c: string) {
-        throw new Error("needs implementation or deletion");
+    // @methodtype command-method
+    public insert(i: number, c: string): void {
+        if (i < 0 || i > this.getNoComponents()) {
+            throw new RangeError(`Insert index ${i} out of bounds [0, ${this.getNoComponents()}]`);
+        }
+        this.assertIsNotNullOrUndefined(c);
+        const components = this.splitIntoComponents();
+        components.splice(i, 0, c);
+        this.name = components.join(this.delimiter);
+        this.noComponents++;
     }
 
-    public append(c: string) {
-        throw new Error("needs implementation or deletion");
+    // @methodtype command-method
+    public append(c: string): void {
+        this.assertIsNotNullOrUndefined(c);
+        if (this.isEmpty()) {
+            this.name = c;
+        } else {
+            this.name += this.delimiter + c;
+        }
+        this.noComponents++;
     }
 
-    public remove(i: number) {
-        throw new Error("needs implementation or deletion");
+    // @methodtype command-method
+    public remove(i: number): void {
+        this.assertIsValidIndex(i);
+        const components = this.splitIntoComponents();
+        const removed = components.splice(i, 1);
+        if (removed.length > 0) {
+            this.name = components.join(this.delimiter);
+            this.noComponents--;
+        }
     }
 
-    public concat(other: Name): void {
-        throw new Error("needs implementation or deletion");
+    // @methodtype helper-method
+    private splitIntoComponents(): string[] {
+        // Use regex to split only at delimiters that are not escaped (not preceded by \)
+        const unescaped = new RegExp(`(?<!\\\\)\\${this.delimiter}`, "g");
+        return this.name.split(unescaped);
+    }
+
+    // @methodtype helper-method
+    private calculateNoComponents(): number {
+        return this.splitIntoComponents().length;
     }
 
 }
