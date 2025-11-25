@@ -600,14 +600,14 @@ describe("asString with different delimiters", () => {
     expect(n.asString("/")).toBe("oss/cs/fau/de");
   });
   
-  it("test asString with empty string delimiter", () => {
+  it("test asString with empty string delimiter throws", () => {
     let n: Name = new StringArrayName(["a", "b", "c"]);
-    expect(n.asString("")).toBe("abc");
+    expect(() => n.asString("")).toThrow(RangeError);
   });
   
-  it("test asString with multi-character delimiter", () => {
+  it("test asString with multi-character delimiter throws", () => {
     let n: Name = new StringName("oss.cs.fau");
-    expect(n.asString(" -> ")).toBe("oss -> cs -> fau");
+    expect(() => n.asString(" -> ")).toThrow(RangeError);
   });
   
   it("test asString preserves empty components", () => {
@@ -688,5 +688,21 @@ describe("HashCode edge cases", () => {
     let n2: Name = new StringName("");
     n2.remove(0);
     expect(n1.getHashCode()).toBe(n2.getHashCode());
+  });
+
+  it("test StringName constructor throws on empty delimiter", () => {
+    expect(() => new StringName("test", "")).toThrow(RangeError);
+  });
+
+  it("test StringName constructor throws on multi-character delimiter", () => {
+    expect(() => new StringName("test", "ab")).toThrow(RangeError);
+  });
+
+  it("test StringArrayName constructor throws on empty delimiter", () => {
+    expect(() => new StringArrayName(["test"], "")).toThrow(RangeError);
+  });
+
+  it("test StringArrayName constructor throws on multi-character delimiter", () => {
+    expect(() => new StringArrayName(["test"], "ab")).toThrow(RangeError);
   });
 });

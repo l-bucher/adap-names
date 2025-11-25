@@ -10,12 +10,14 @@ export class StringArrayName implements Name {
     constructor(source: string[], delimiter?: string) {
         this.components = [...source];
         if (delimiter !== undefined) {
+            this.assertIsValidDelimiter(delimiter);
             this.delimiter = delimiter;
         }
     }
 
     // @methodtype conversion-method
     public asString(delimiter: string = this.delimiter): string {
+        this.assertIsValidDelimiter(delimiter);
         // unmask components
         const unmasked = this.components.map(comp => this.unmask(comp));
         return unmasked.join(delimiter);
@@ -129,6 +131,13 @@ export class StringArrayName implements Name {
     private assertIsNotNullOrUndefined(component: string): void {
         if (component === null || component === undefined) {
             throw new TypeError("Component cannot be null or undefined");
+        }
+    }
+
+    // @methodtype assertion-method
+    private assertIsValidDelimiter(delimiter: string): void {
+        if (delimiter.length !== 1) {
+            throw new RangeError("Delimiter must be exactly one character");
         }
     }
 

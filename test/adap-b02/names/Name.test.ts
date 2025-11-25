@@ -375,4 +375,20 @@ describe("Interchangeability tests", () => {
     n1.concat(n2);
     expect(n1.asString()).toBe("oss.cs.fau.de");
   });
+
+  it("test StringName constructor throws on empty delimiter", () => {
+    expect(() => new StringName("test", "")).toThrow(RangeError);
+  });
+
+  it("test StringName constructor throws on multi-character delimiter", () => {
+    expect(() => new StringName("test", "ab")).toThrow(RangeError);
+  });
+
+  it("test StringArrayName constructor throws on empty delimiter", () => {
+    expect(() => new StringArrayName(["test"], "")).toThrow(RangeError);
+  });
+
+  it("test StringArrayName constructor throws on multi-character delimiter", () => {
+    expect(() => new StringArrayName(["test"], "ab")).toThrow(RangeError);
+  });
 });

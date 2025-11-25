@@ -10,6 +10,7 @@ export class StringName implements Name {
     // @methodtype initialization-method
     constructor(source: string, delimiter?: string) {
         if (delimiter !== undefined) {
+            this.assertIsValidDelimiter(delimiter);
             this.delimiter = delimiter;
         }
         this.name = source;
@@ -18,6 +19,7 @@ export class StringName implements Name {
 
     // @methodtype conversion-method
     public asString(delimiter: string = this.delimiter): string {
+        this.assertIsValidDelimiter(delimiter);
         if (delimiter === this.delimiter) {
             // unmask the name string
             return this.unmask(this.name);
@@ -176,6 +178,13 @@ export class StringName implements Name {
     private assertIsNotNullOrUndefined(component: string): void {
         if (component === null || component === undefined) {
             throw new TypeError("Component cannot be null or undefined");
+        }
+    }
+
+    // @methodtype assertion-method
+    private assertIsValidDelimiter(delimiter: string): void {
+        if (delimiter.length !== 1) {
+            throw new RangeError("Delimiter must be exactly one character");
         }
     }
 }

@@ -7,6 +7,7 @@ export abstract class AbstractName implements Name {
 
     // @methodtype initialization-method
     constructor(delimiter: string = DEFAULT_DELIMITER) {
+        this.assertIsValidDelimiter(delimiter);
         this.delimiter = delimiter;
     }
 
@@ -14,6 +15,7 @@ export abstract class AbstractName implements Name {
 
     // @methodtype conversion-method
     public asString(delimiter: string = this.delimiter): string {
+        this.assertIsValidDelimiter(delimiter);
         const components: string[] = [];
         for (let i = 0; i < this.getNoComponents(); i++) {
             components.push(this.getComponent(i));
@@ -136,6 +138,13 @@ export abstract class AbstractName implements Name {
     protected assertIsNotNullOrUndefined(component: string): void {
         if (component === null || component === undefined) {
             throw new TypeError("Component cannot be null or undefined");
+        }
+    }
+
+    // @methodtype assertion-method
+    protected assertIsValidDelimiter(delimiter: string): void {
+        if (delimiter.length !== 1) {
+            throw new RangeError("Delimiter must be exactly one character");
         }
     }
 }

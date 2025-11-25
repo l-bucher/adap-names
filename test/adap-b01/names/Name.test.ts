@@ -259,4 +259,12 @@ describe("Method chaining tests", () => {
     n.append("fau");
     expect(n.asString()).toBe("www.de.fau");
   });
+
+  it("test constructor throws on empty delimiter", () => {
+    expect(() => new Name(["test"], "")).toThrow(RangeError);
+  });
+
+  it("test constructor throws on multi-character delimiter", () => {
+    expect(() => new Name(["test"], "ab")).toThrow(RangeError);
+  });
 });
