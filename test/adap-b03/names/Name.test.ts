@@ -22,6 +22,14 @@ describe("Basic StringName function tests", () => {
     n.remove(0);
     expect(n.asString()).toBe("cs.fau.de");
   });
+
+  it("test insert on empty name after remove", () => {
+    let n: Name = new StringName("");
+    n.remove(0);
+    n.insert(0, "oss");
+    expect(n.asString()).toBe("oss");
+    expect(n.getNoComponents()).toBe(1);
+  });
 });
 
 describe("Basic StringArrayName function tests", () => {
@@ -99,6 +107,23 @@ describe("Equality and hashCode tests", () => {
     let n1: Name = new StringName("oss.cs.fau.de");
     let n2: Name = new StringArrayName(["oss", "cs", "fau", "de"]);
     expect(n1.getHashCode()).toBe(n2.getHashCode());
+  });
+
+  it("test equal objects must have same hashCode", () => {
+    // Test the contract: a.isEqual(b) === true => a.getHashCode() === b.getHashCode()
+    let pairs = [
+      [new StringName("oss.cs.fau.de"), new StringName("oss.cs.fau.de")],
+      [new StringArrayName(["oss", "cs"]), new StringArrayName(["oss", "cs"])],
+      [new StringName("oss.cs"), new StringArrayName(["oss", "cs"])],
+      [new StringName("a"), new StringName("a")],
+      [new StringArrayName([]), new StringArrayName([])],
+    ];
+    
+    for (let [n1, n2] of pairs) {
+      if (n1.isEqual(n2)) {
+        expect(n1.getHashCode()).toBe(n2.getHashCode());
+      }
+    }
   });
 });
 

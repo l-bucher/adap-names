@@ -23,6 +23,14 @@ describe("Basic StringName function tests", () => {
     expect(n.asString()).toBe("cs.fau.de");
   });
 
+  it("test insert on empty name after remove", () => {
+    let n: Name = new StringName("");
+    n.remove(0);
+    n.insert(0, "oss");
+    expect(n.asString()).toBe("oss");
+    expect(n.getNoComponents()).toBe(1);
+  });
+
   it("test getComponent", () => {
     let n: Name = new StringName("oss.cs.fau.de");
     expect(n.getComponent(0)).toBe("oss");

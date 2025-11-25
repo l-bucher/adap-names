@@ -46,9 +46,15 @@ export class StringName extends AbstractName {
             throw new RangeError(`Insert index ${i} out of bounds [0, ${this.getNoComponents()}]`);
         }
         this.assertIsNotNullOrUndefined(c);
-        const components = this.splitIntoComponents();
-        components.splice(i, 0, c);
-        this.name = components.join(this.delimiter);
+        
+        // Handle empty name edge case: "".split() returns [""], not []
+        if (this.isEmpty()) {
+            this.name = c;
+        } else {
+            const components = this.splitIntoComponents();
+            components.splice(i, 0, c);
+            this.name = components.join(this.delimiter);
+        }
         this.noComponents++;
     }
 
