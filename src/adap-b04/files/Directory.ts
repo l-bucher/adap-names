@@ -10,6 +10,8 @@ export class Directory extends Node {
     }
 
     public hasChildNode(cn: Node): boolean {
+        IllegalArgumentException.assert(cn != null, "child node cannot be null or undefined");
+        
         return this.childNodes.has(cn);
     }
 
