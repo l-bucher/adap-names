@@ -16,7 +16,12 @@ export class StringName extends AbstractName {
         
         super(delimiter);
         this.name = source;
-        this.noComponents = this.calculateNoComponents();
+        
+        const components = this.splitIntoComponents();
+        for (const c of components) {
+            this.assertIsProperlyMasked(c);
+        }
+        this.noComponents = components.length;
         
         this.assertClassInvariants();
     }
@@ -36,17 +41,14 @@ export class StringName extends AbstractName {
         IllegalArgumentException.assert(i >= 0 && i < this.getNoComponents(), `index ${i} out of bounds [0, ${this.getNoComponents()})`);
         
         const components = this.splitIntoComponents();
-        const result = components[i];
-        
-        MethodFailedException.assert(result !== undefined, "failed to get component");
-        this.assertClassInvariants();
-        return result;
+        return components[i];
     }
 
     // @methodtype set-method
     public setComponent(i: number, c: string): void {
         IllegalArgumentException.assert(i >= 0 && i < this.getNoComponents(), `index ${i} out of bounds [0, ${this.getNoComponents()})`);
         IllegalArgumentException.assert(c != null, "component cannot be null or undefined");
+        this.assertIsProperlyMasked(c);
         
         const components = this.splitIntoComponents();
         components[i] = c;
@@ -60,6 +62,7 @@ export class StringName extends AbstractName {
     public insert(i: number, c: string): void {
         IllegalArgumentException.assert(i >= 0 && i <= this.getNoComponents(), `insert index ${i} out of bounds [0, ${this.getNoComponents()}]`);
         IllegalArgumentException.assert(c != null, "component cannot be null or undefined");
+        this.assertIsProperlyMasked(c);
         
         const oldLength = this.getNoComponents();
         
@@ -79,6 +82,7 @@ export class StringName extends AbstractName {
     // @methodtype command-method
     public append(c: string): void {
         IllegalArgumentException.assert(c != null, "component cannot be null or undefined");
+        this.assertIsProperlyMasked(c);
         
         const oldLength = this.getNoComponents();
         if (this.isEmpty()) {
@@ -113,9 +117,27 @@ export class StringName extends AbstractName {
 
     // @methodtype helper-method
     private splitIntoComponents(): string[] {
-        // Use regex to split only at delimiters that are not escaped (not preceded by \)
-        const unescaped = new RegExp(`(?<!\\\\)\\${this.delimiter}`, "g");
-        return this.name.split(unescaped);
+        const parts = this.name.split(this.delimiter);
+
+        for (let i = 0; i < parts.length - 1; i++) {
+            // Count trailing escape characters to check for escape
+            let backslashCount = 0;
+            for (let j = parts[i].length - 1; j >= 0; j--) {
+                if (parts[i][j] === ESCAPE_CHARACTER) {
+                    backslashCount++;
+                } else {
+                    break;
+                }
+            }
+
+            // If odd number of escape characters, the delimiter was escaped
+            if (backslashCount % 2 !== 0) {
+                parts[i] += this.delimiter + parts[i+1]; // Merge with next part
+                parts.splice(i+1, 1); // Remove the next part
+                i--; // Check current index again
+            }
+        }
+        return parts;
     }
 
     // @methodtype helper-method

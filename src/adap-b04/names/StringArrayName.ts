@@ -14,6 +14,9 @@ export class StringArrayName extends AbstractName {
         IllegalArgumentException.assert(source != null, "source cannot be null or undefined");
         
         super(delimiter);
+        for (const c of source) {
+            this.assertIsProperlyMasked(c);
+        }
         this.components = [...source];
         
         this.assertClassInvariants();
@@ -33,17 +36,14 @@ export class StringArrayName extends AbstractName {
     public getComponent(i: number): string {
         IllegalArgumentException.assert(i >= 0 && i < this.getNoComponents(), `index ${i} out of bounds [0, ${this.getNoComponents()})`);
         
-        const result = this.components[i];
-        
-        MethodFailedException.assert(result !== undefined, "failed to get component");
-        this.assertClassInvariants();
-        return result;
+        return this.components[i];
     }
 
     // @methodtype set-method
     public setComponent(i: number, c: string): void {
         IllegalArgumentException.assert(i >= 0 && i < this.getNoComponents(), `index ${i} out of bounds [0, ${this.getNoComponents()})`);
         IllegalArgumentException.assert(c != null, "component cannot be null or undefined");
+        this.assertIsProperlyMasked(c);
         
         this.components[i] = c;
         
@@ -55,6 +55,7 @@ export class StringArrayName extends AbstractName {
     public insert(i: number, c: string): void {
         IllegalArgumentException.assert(i >= 0 && i <= this.getNoComponents(), `insert index ${i} out of bounds [0, ${this.getNoComponents()}]`);
         IllegalArgumentException.assert(c != null, "component cannot be null or undefined");
+        this.assertIsProperlyMasked(c);
         
         const oldLength = this.getNoComponents();
         this.components.splice(i, 0, c);
@@ -66,6 +67,7 @@ export class StringArrayName extends AbstractName {
     // @methodtype command-method
     public append(c: string): void {
         IllegalArgumentException.assert(c != null, "component cannot be null or undefined");
+        this.assertIsProperlyMasked(c);
         
         const oldLength = this.getNoComponents();
         this.components.push(c);

@@ -29,10 +29,7 @@ export abstract class AbstractName implements Name {
             components.push(this.getComponent(i));
         }
         const unmasked = components.map(c => this.unmask(c));
-        const result = unmasked.join(delimiter);
-        
-        this.assertClassInvariants();
-        return result;
+        return unmasked.join(delimiter);
     }
 
     // @methodtype conversion-method
@@ -48,10 +45,7 @@ export abstract class AbstractName implements Name {
         }
         const unmasked = components.map(c => this.unmask(c));
         const remasked = unmasked.map(c => this.mask(c, DEFAULT_DELIMITER));
-        const result = remasked.join(DEFAULT_DELIMITER);
-        
-        this.assertClassInvariants();
-        return result;
+        return remasked.join(DEFAULT_DELIMITER);
     }
 
     // @methodtype boolean-query-method
@@ -147,6 +141,36 @@ export abstract class AbstractName implements Name {
             result += char;
         }
         return result;
+    }
+
+    // @methodtype assertion-method
+    protected assertIsProperlyMasked(component: string): void {
+        for (let i = 0; i < component.length; i++) {
+            if (component[i] === this.delimiter) {
+                let escapes = 0;
+                let pos = i - 1;
+                while (pos >= 0 && component[pos] === ESCAPE_CHARACTER) {
+                    escapes++;
+                    pos--;
+                }
+                if (escapes % 2 === 0) {
+                    IllegalArgumentException.assert(false, "component contains unmasked delimiter");
+                }
+            }
+        }
+
+        // Check: Component must not end with an odd number of escape characters (dangling escape)
+        let escapes = 0;
+        for (let i = component.length - 1; i >= 0; i--) {
+            if (component[i] === ESCAPE_CHARACTER) {
+                escapes++;
+            } else {
+                break;
+            }
+        }
+        if (escapes % 2 !== 0) {
+            IllegalArgumentException.assert(false, "component ends with unmasked escape character");
+        }
     }
 
     // @methodtype assertion-method

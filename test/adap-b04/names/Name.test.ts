@@ -471,7 +471,7 @@ describe("Masking and escaping tests", () => {
   });
   
   it("test component with delimiter gets masked in asDataString", () => {
-    let n: Name = new StringArrayName(["oss.cs", "fau", "de"]);
+    let n: Name = new StringArrayName(["oss\\.cs", "fau", "de"]);
     let dataString = n.asDataString();
     expect(dataString).toBe("oss\\.cs.fau.de");
   });
@@ -915,5 +915,49 @@ describe("Contract Tests - Class Invariants", () => {
     // oss.cs.fau.de -> insert informatik at 1 -> oss.informatik.cs.fau.de (5) -> remove 2 -> oss.informatik.fau.de (4) -> append com -> oss.informatik.fau.de.com (5)
     expect(n.getNoComponents()).toBe(5);
     expect(n.getDelimiterCharacter()).toBe(".");
+  });
+});
+
+describe("Contract Tests - Masking Validation", () => {
+  it("StringArrayName constructor throws on unmasked delimiter", () => {
+    expect(() => new StringArrayName(["oss.cs"])).toThrow(IllegalArgumentException);
+  });
+
+  it("StringArrayName constructor throws on dangling escape", () => {
+    expect(() => new StringArrayName(["oss\\"])).toThrow(IllegalArgumentException);
+  });
+
+  it("StringName constructor throws on dangling escape", () => {
+    expect(() => new StringName("oss\\")).toThrow(IllegalArgumentException);
+  });
+
+  it("append throws on unmasked delimiter", () => {
+    const n = new StringName("oss");
+    expect(() => n.append("cs.fau")).toThrow(IllegalArgumentException);
+  });
+
+  it("append throws on dangling escape", () => {
+    const n = new StringName("oss");
+    expect(() => n.append("cs\\")).toThrow(IllegalArgumentException);
+  });
+
+  it("insert throws on unmasked delimiter", () => {
+    const n = new StringArrayName(["oss"]);
+    expect(() => n.insert(0, "cs.fau")).toThrow(IllegalArgumentException);
+  });
+
+  it("insert throws on dangling escape", () => {
+    const n = new StringArrayName(["oss"]);
+    expect(() => n.insert(0, "cs\\")).toThrow(IllegalArgumentException);
+  });
+
+  it("setComponent throws on unmasked delimiter", () => {
+    const n = new StringName("oss");
+    expect(() => n.setComponent(0, "cs.fau")).toThrow(IllegalArgumentException);
+  });
+
+  it("setComponent throws on dangling escape", () => {
+    const n = new StringName("oss");
+    expect(() => n.setComponent(0, "cs\\")).toThrow(IllegalArgumentException);
   });
 });
