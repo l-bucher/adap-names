@@ -48,6 +48,16 @@ describe("Node Contract Tests - Preconditions", () => {
     expect(() => new Directory("", rn)).toThrow(IllegalArgumentException);
   });
 
+  it("constructor throws on base name with slash", () => {
+    const rn = RootNode.getRootNode();
+    expect(() => new Directory("foo/bar", rn)).toThrow(IllegalArgumentException);
+  });
+
+  it("constructor throws on base name with null byte", () => {
+    const rn = RootNode.getRootNode();
+    expect(() => new Directory("foo\0bar", rn)).toThrow(IllegalArgumentException);
+  });
+
   it("constructor throws on null parent", () => {
     expect(() => new Directory("test", null as any)).toThrow(IllegalArgumentException);
   });
@@ -69,6 +79,18 @@ describe("Node Contract Tests - Preconditions", () => {
     const rn = RootNode.getRootNode();
     const dir = new Directory("test", rn);
     expect(() => dir.rename("")).toThrow(IllegalArgumentException);
+  });
+
+  it("rename throws on base name with slash", () => {
+    const rn = RootNode.getRootNode();
+    const dir = new Directory("test", rn);
+    expect(() => dir.rename("foo/bar")).toThrow(IllegalArgumentException);
+  });
+
+  it("rename throws on base name with null byte", () => {
+    const rn = RootNode.getRootNode();
+    const dir = new Directory("test", rn);
+    expect(() => dir.rename("foo\0bar")).toThrow(IllegalArgumentException);
   });
 
   it("move throws on null target", () => {
@@ -268,5 +290,43 @@ describe("Link Contract Tests", () => {
     const link = new Link("link", dir);
     
     expect(() => link.rename("newname")).toThrow(IllegalArgumentException);
+  });
+
+  it("rename on link with invalid name throws", () => {
+    const rn = RootNode.getRootNode();
+    const dir = new Directory("test", rn);
+    const file = new File("target.txt", dir);
+    const link = new Link("link", dir, file);
+    
+    expect(() => link.rename("foo/bar")).toThrow(IllegalArgumentException);
+    expect(() => link.rename("foo\0bar")).toThrow(IllegalArgumentException);
+  });
+
+  it("rename link pointing to RootNode to non-empty string throws", () => {
+    const rn = RootNode.getRootNode();
+    const dir = new Directory("test", rn);
+    const link = new Link("linkToRoot", dir, rn);
+    
+    expect(() => link.rename("invalid")).toThrow(IllegalArgumentException);
+  });
+
+  it("rename link pointing to RootNode to empty string throws", () => {
+    const rn = RootNode.getRootNode();
+    const dir = new Directory("test", rn);
+    const link = new Link("linkToRoot", dir, rn);
+    
+    expect(() => link.rename("")).toThrow(IllegalArgumentException);
+  });
+});
+
+describe("RootNode Specific Tests", () => {
+  it("rename RootNode to non-empty string throws", () => {
+    const rn = RootNode.getRootNode();
+    expect(() => rn.rename("invalid")).toThrow(IllegalArgumentException);
+  });
+
+  it("rename RootNode to empty string succeeds", () => {
+    const rn = RootNode.getRootNode();
+    expect(() => rn.rename("")).not.toThrow();
   });
 });

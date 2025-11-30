@@ -9,11 +9,7 @@ export class Node {
 
     constructor(bn: string, pn: Directory) {
         // Preconditions
-        IllegalArgumentException.assert(bn != null, "base name cannot be null or undefined");
-        // Special case: RootNode is allowed to have empty base name
-        if (this.constructor.name !== "RootNode") {
-            IllegalArgumentException.assert(bn.length > 0, "base name cannot be empty");
-        }
+        this.assertIsValidBaseName(bn);
         IllegalArgumentException.assert(pn != null, "parent node cannot be null or undefined");
         
         this.doSetBaseName(bn);
@@ -49,10 +45,16 @@ export class Node {
     }
 
     public rename(bn: string): void {
-        IllegalArgumentException.assert(bn != null, "base name cannot be null or undefined");
-        IllegalArgumentException.assert(bn.length > 0, "base name cannot be empty");
+        this.assertIsValidBaseName(bn);
         
         this.doSetBaseName(bn);
+    }
+
+    protected assertIsValidBaseName(bn: string): void {
+        IllegalArgumentException.assert(bn != null, "base name cannot be null or undefined");
+        IllegalArgumentException.assert(bn.length > 0, "base name cannot be empty");
+        IllegalArgumentException.assert(!bn.includes("/"), "base name cannot contain directory separator '/'");
+        IllegalArgumentException.assert(!bn.includes("\0"), "base name cannot contain null byte");
     }
 
     protected doSetBaseName(bn: string): void {

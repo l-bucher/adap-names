@@ -1,6 +1,7 @@
 import { Name } from "../names/Name";
 import { StringName } from "../names/StringName";
 import { Directory } from "./Directory";
+import { IllegalArgumentException } from "../common/IllegalArgumentException";
 
 export class RootNode extends Directory {
 
@@ -28,6 +29,11 @@ export class RootNode extends Directory {
 
     protected doSetBaseName(bn: string): void {
         // null operation
+    }
+
+    protected assertIsValidBaseName(bn: string): void {
+        IllegalArgumentException.assert(bn != null, "base name cannot be null or undefined");
+        IllegalArgumentException.assert(bn === "", "RootNode base name must be empty");
     }
 
 }

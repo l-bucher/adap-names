@@ -30,8 +30,7 @@ export class Link extends Node {
     }
 
     public rename(bn: string): void {
-        IllegalArgumentException.assert(bn != null, "base name cannot be null or undefined");
-        IllegalArgumentException.assert(bn.length > 0, "base name cannot be empty");
+        this.assertIsValidBaseName(bn);
         
         const target = this.ensureTargetNode(this.targetNode);
         target.rename(bn);
